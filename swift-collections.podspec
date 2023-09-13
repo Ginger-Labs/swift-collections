@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name             = "swift-collections"
+  s.name             = "Collections"
   s.summary          = "swift-collections"
   s.version          = "1.0.4"
   s.homepage         = "https://github.com/apple/swift-collections"
