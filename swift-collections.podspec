@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
   s.name             = "swift-collections"
   s.summary          = "swift-collections"
   s.version          = "1.0.4"
-  s.homepage         = ""
+  s.homepage         = "https://github.com/apple/swift-collections"
   s.license          = 'MIT'
   s.author           = "Apple"
   s.source           = {
