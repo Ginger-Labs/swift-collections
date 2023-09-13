@@ -4,7 +4,7 @@ Pod::Spec.new do |s|
   s.version          = "1.0.4"
   s.homepage         = ""
   s.license          = 'MIT'
-  s.author           = { "" }
+  s.author           = { "Apple" }
   s.source           = {
     :git => "",
     :tag => s.version.to_s
