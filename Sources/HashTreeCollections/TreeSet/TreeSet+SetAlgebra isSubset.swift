@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2022 Apple Inc. and the Swift project authors
+// Copyright (c) 2022 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 #if !COLLECTIONS_SINGLE_MODULE
-import _CollectionsUtilities
+import InternalCollectionsUtilities
 #endif
 
 extension TreeSet {
@@ -82,11 +82,9 @@ extension TreeSet {
   ///    and it constructs a temporary persistent set containing every
   ///    element of the sequence.
   @inlinable
-  public func isSubset<S: Sequence>(of other: S) -> Bool
-  where S.Element == Element
-  {
-    if S.self == Self.self {
-      return isSubset(of: other as! Self)
+  public func isSubset(of other: some Sequence<Element>) -> Bool {
+    if let other = _specialize(other, for: Self.self) {
+      return isSubset(of: other)
     }
 
     var it = self.makeIterator()

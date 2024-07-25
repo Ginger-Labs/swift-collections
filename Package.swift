@@ -1,9 +1,9 @@
-// swift-tools-version:5.6
+// swift-tools-version:5.7
 //===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2021-2023 Apple Inc. and the Swift project authors
+// Copyright (c) 2021 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -178,17 +178,16 @@ let targets: [CustomTarget] = [
   .target(
     kind: .testSupport,
     name: "_CollectionsTestSupport",
-    dependencies: ["_CollectionsUtilities"]),
+    dependencies: ["InternalCollectionsUtilities"]),
   .target(
     kind: .test,
     name: "CollectionsTestSupportTests",
     dependencies: ["_CollectionsTestSupport"]),
   .target(
     kind: .hidden,
-    name: "_CollectionsUtilities",
+    name: "InternalCollectionsUtilities",
     exclude: [
       "CMakeLists.txt",
-      "Compatibility/Array+WithContiguousStorage Compatibility.swift.gyb",
       "Compatibility/UnsafeMutableBufferPointer+SE-0370.swift.gyb",
       "Compatibility/UnsafeMutablePointer+SE-0370.swift.gyb",
       "Compatibility/UnsafeRawPointer extensions.swift.gyb",
@@ -199,6 +198,7 @@ let targets: [CustomTarget] = [
       "IntegerTricks/UInt+first and last set bit.swift.gyb",
       "IntegerTricks/UInt+reversed.swift.gyb",
       "RandomAccessCollection+Offsets.swift.gyb",
+      "Specialize.swift.gyb",
       "UnsafeBitSet/_UnsafeBitSet+Index.swift.gyb",
       "UnsafeBitSet/_UnsafeBitSet+_Word.swift.gyb",
       "UnsafeBitSet/_UnsafeBitSet.swift.gyb",
@@ -209,7 +209,7 @@ let targets: [CustomTarget] = [
   .target(
     kind: .exported,
     name: "BitCollections",
-    dependencies: ["_CollectionsUtilities"],
+    dependencies: ["InternalCollectionsUtilities"],
     exclude: ["CMakeLists.txt"]),
   .target(
     kind: .test,
@@ -221,7 +221,7 @@ let targets: [CustomTarget] = [
   .target(
     kind: .exported,
     name: "DequeModule",
-    dependencies: ["_CollectionsUtilities"],
+    dependencies: ["InternalCollectionsUtilities"],
     exclude: ["CMakeLists.txt"]),
   .target(
     kind: .test,
@@ -231,7 +231,7 @@ let targets: [CustomTarget] = [
   .target(
     kind: .exported,
     name: "HashTreeCollections",
-    dependencies: ["_CollectionsUtilities"],
+    dependencies: ["InternalCollectionsUtilities"],
     exclude: ["CMakeLists.txt"]),
   .target(
     kind: .test,
@@ -241,7 +241,7 @@ let targets: [CustomTarget] = [
   .target(
     kind: .exported,
     name: "HeapModule",
-    dependencies: ["_CollectionsUtilities"],
+    dependencies: ["InternalCollectionsUtilities"],
     exclude: ["CMakeLists.txt"]),
   .target(
     kind: .test,
@@ -251,7 +251,7 @@ let targets: [CustomTarget] = [
   .target(
     kind: .exported,
     name: "OrderedCollections",
-    dependencies: ["_CollectionsUtilities"],
+    dependencies: ["InternalCollectionsUtilities"],
     exclude: ["CMakeLists.txt"]),
   .target(
     kind: .test,
@@ -261,8 +261,9 @@ let targets: [CustomTarget] = [
   .target(
     kind: .exported,
     name: "_RopeModule",
-    dependencies: ["_CollectionsUtilities"],
-    directory: "RopeModule"),
+    dependencies: ["InternalCollectionsUtilities"],
+    directory: "RopeModule",
+    exclude: ["CMakeLists.txt"]),
   .target(
     kind: .test,
     name: "RopeModuleTests",
@@ -271,7 +272,7 @@ let targets: [CustomTarget] = [
   .target(
     kind: .exported,
     name: "SortedCollections",
-    dependencies: ["_CollectionsUtilities"],
+    dependencies: ["InternalCollectionsUtilities"],
     directory: "SortedCollections"),
   .target(
     kind: .test,

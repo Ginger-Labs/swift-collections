@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2022 Apple Inc. and the Swift project authors
+// Copyright (c) 2022 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 #if !COLLECTIONS_SINGLE_MODULE
-import _CollectionsUtilities
+import InternalCollectionsUtilities
 #endif
 
 extension TreeDictionary: CustomStringConvertible {
@@ -23,11 +23,6 @@ extension TreeDictionary: CustomStringConvertible {
 extension TreeDictionary: CustomDebugStringConvertible {
   /// A textual representation of this instance, suitable for debugging.
   public var debugDescription: String {
-    _dictionaryDescription(
-      for: self, debug: true, typeName: Self._debugTypeName())
-  }
-
-  internal static func _debugTypeName() -> String {
-    "TreeDictionary<\(Key.self), \(Value.self)>"
+    description
   }
 }

@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2022 Apple Inc. and the Swift project authors
+// Copyright (c) 2022 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -87,11 +87,11 @@ class TreeSetTests: CollectionTestCase {
   func test_descriptions() {
     let empty: TreeSet<Int> = []
     expectEqual(empty.description, "[]")
-    expectEqual(empty.debugDescription, "TreeSet<Int>([])")
+    expectEqual(empty.debugDescription, "[]")
 
     let a: TreeSet = ["a"]
-    expectEqual(a.description, "[a]")
-    expectEqual(a.debugDescription, "TreeSet<String>([\"a\"])")
+    expectEqual(a.description, #"["a"]"#)
+    expectEqual(a.debugDescription, #"["a"]"#)
   }
 
   func test_index_descriptions() {
@@ -680,6 +680,21 @@ class TreeSetTests: CollectionTestCase {
       ],
       [
         ["e"]
+      ],
+      [
+        ["f"], ["f"],
+      ],
+      [
+        ["g"], ["g"],
+      ],
+      [
+        ["h"], ["h"],
+      ],
+      [
+        ["i"], ["i"],
+      ],
+      [
+        ["j"], ["j"],
       ],
       [
         ["a", "b"], ["b", "a"],

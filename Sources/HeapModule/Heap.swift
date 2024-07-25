@@ -2,27 +2,61 @@
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2021 - 2023 Apple Inc. and the Swift project authors
+// Copyright (c) 2021 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
 //
 //===----------------------------------------------------------------------===//
 
-/// A [Min-Max Heap](https://en.wikipedia.org/wiki/Min-max_heap) data structure.
+
+/// A container type implementing a double-ended priority queue.
+/// `Heap` is a container of `Comparable` elements that provides immediate
+/// access to its minimal and maximal members, and supports removing these items
+/// or inserting arbitrary new items in (amortized) logarithmic complexity.
 ///
-/// In a min-max heap, each node at an even level in the tree is less than or
-/// equal to all its descendants, while each node at an odd level in the tree is
-/// greater than or equal to all of its descendants.
+///     var queue: Heap<Int> = [3, 4, 1, 2]
+///     queue.insert(0)
+///     print(queue.min)      // 0
+///     print(queue.popMax()) // 4
+///     print(queue.max)      // 3
 ///
-/// The implementation is based on [Atkinson et al. 1986]:
+/// `Heap` implements the min-max heap data structure, based on
+/// [Atkinson et al. 1986].
 ///
 /// [Atkinson et al. 1986]: https://doi.org/10.1145/6617.6621
 ///
-/// M.D. Atkinson, J.-R. Sack, N. Santoro, T. Strothotte.
+/// > M.D. Atkinson, J.-R. Sack, N. Santoro, T. Strothotte.
 /// "Min-Max Heaps and Generalized Priority Queues."
 /// *Communications of the ACM*, vol. 29, no. 10, Oct. 1986., pp. 996-1000,
 /// doi:[10.1145/6617.6621](https://doi.org/10.1145/6617.6621)
+///
+/// To efficiently implement these operations, a min-max heap arranges its items
+/// into a complete binary tree, maintaining a specific invariant across levels,
+/// called the "min-max heap property": each node at an even level in the tree
+/// must be less than or equal to all its descendants, while each node at an odd
+/// level in the tree must be greater than or equal to all of its descendants.
+/// To achieve a compact representation, this tree is stored in breadth-first
+/// order inside a single contiguous array value.
+///
+/// Unlike most container types, `Heap` doesn't provide a direct way to iterate
+/// over the elements it contains -- it isn't a `Sequence` (nor a `Collection`).
+/// This is because the order of items in a heap is unspecified and unstable:
+/// it may vary between heaps that contain the same set of items, and it may
+/// sometimes change in between versions of this library. In particular, the
+/// items are (almost) never expected to be in sorted order.
+///
+/// For cases where you do need to access the contents of a heap directly and
+/// you don't care about their (lack of) order, you can do so by invoking the
+/// `unordered` view. This read-only view gives you direct access to the
+/// underlying array value:
+///
+///     for item in queue.unordered {
+///       ...
+///     }
+///
+/// The name `unordered` highlights the lack of ordering guarantees on the
+/// contents, and it helps avoid relying on any particular order.
 @frozen
 public struct Heap<Element: Comparable> {
   @usableFromInline
@@ -66,6 +100,42 @@ extension Heap {
     Array(_storage)
   }
 
+  /// Creates an empty heap with preallocated space for at least the
+  /// specified number of elements.
+  ///
+  /// Use this initializer to avoid intermediate reallocations of a heap's
+  /// storage when you know in advance how many elements you'll insert into it
+  /// after creation.
+  ///
+  /// - Parameter minimumCapacity: The minimum number of elements that the newly
+  ///   created heap should be able to store without reallocating its storage.
+  ///
+  /// - Complexity: O(1) allocations
+  @inlinable
+  public init(minimumCapacity: Int) {
+    self.init()
+    self.reserveCapacity(minimumCapacity)
+  }
+
+  /// Reserves enough space to store the specified number of elements.
+  ///
+  /// If you are adding a known number of elements to a heap, use this method
+  /// to avoid multiple reallocations. This method ensures that the heap has
+  /// unique, mutable, contiguous storage, with space allocated for at least
+  /// the requested number of elements.
+  ///
+  /// For performance reasons, the size of the newly allocated storage might be
+  /// greater than the requested capacity.
+  ///
+  /// - Parameter minimumCapacity: The minimum number of elements that the
+  ///   resulting heap should be able to store without reallocating its storage.
+  ///
+  /// - Complexity: O(`count`)
+  @inlinable
+  public mutating func reserveCapacity(_ minimumCapacity: Int) {
+    _storage.reserveCapacity(minimumCapacity)
+  }
+
   /// Inserts the given element into the heap.
   ///
   /// - Complexity: O(log(`count`)) element comparisons
@@ -83,7 +153,7 @@ extension Heap {
   ///
   /// - Complexity: O(1)
   @inlinable
-  public func min() -> Element? {
+  public var min: Element? {
     _storage.first
   }
 
@@ -91,7 +161,7 @@ extension Heap {
   ///
   /// - Complexity: O(1)
   @inlinable
-  public func max() -> Element? {
+  public var max: Element? {
     _storage.withUnsafeBufferPointer { buffer in
       guard buffer.count > 2 else {
         // If count is 0, `last` will return `nil`
@@ -158,6 +228,7 @@ extension Heap {
   ///
   /// - Complexity: O(log(`count`)) element comparisons
   @inlinable
+  @discardableResult
   public mutating func removeMin() -> Element {
     return popMin()!
   }
@@ -168,6 +239,7 @@ extension Heap {
   ///
   /// - Complexity: O(log(`count`)) element comparisons
   @inlinable
+  @discardableResult
   public mutating func removeMax() -> Element {
     return popMax()!
   }
@@ -239,7 +311,7 @@ extension Heap {
   ///
   /// - Complexity: O(*n*), where *n* is the number of items in `elements`.
   @inlinable
-  public init<S: Sequence>(_ elements: S) where S.Element == Element {
+  public init(_ elements: some Sequence<Element>) {
     _storage = ContiguousArray(elements)
     guard _storage.count > 1 else { return }
 
@@ -253,18 +325,49 @@ extension Heap {
   ///
   /// - Parameter newElements: The new elements to insert into the heap.
   ///
-  /// - Complexity: O(*n* * log(`count`)), where *n* is the length of `newElements`.
+  /// - Complexity: O(`count` + *k*), where *k* is the length of `newElements`.
   @inlinable
-  public mutating func insert<S: Sequence>(
-    contentsOf newElements: S
-  ) where S.Element == Element {
-    if count == 0 {
+  public mutating func insert(
+    contentsOf newElements: some Sequence<Element>
+  ) {
+    let origCount = self.count
+    if origCount == 0 {
       self = Self(newElements)
       return
     }
-    _storage.reserveCapacity(count + newElements.underestimatedCount)
-    for element in newElements {
-      insert(element)
+    defer { _checkInvariants() }
+    _storage.append(contentsOf: newElements)
+    let newCount = self.count
+
+    guard newCount > origCount, newCount > 1 else {
+      // If we didn't append, or the result is too small to violate heapness,
+      // then we have nothing else to dp.
+      return
+    }
+
+    // Otherwise we can either insert items one by one, or we can run Floyd's
+    // algorithm to re-heapify our entire storage from scratch.
+    //
+    // If n is the original count, and k is the number of items we need to
+    // append, then Floyd's costs O(n + k) comparisons/swaps, while
+    // the naive loop costs k * log(n + k) -- so we expect that Floyd will
+    // be cheaper whenever k is "large enough" relative to n.
+    //
+    // Floyd's algorithm has a worst-case upper complexity bound of 2 * (n + k),
+    // so one simple heuristic is to use it whenever k * log(n + k) exceeds
+    // that.
+    //
+    // FIXME: Write a benchmark to verify this heuristic.
+    let heuristicLimit = 2 * newCount / newCount._binaryLogarithm()
+    let useFloyd = (newCount - origCount) < heuristicLimit
+    _update { handle in
+      if useFloyd {
+        handle.heapify()
+      } else {
+        for offset in origCount ..< handle.count {
+          handle.bubbleUp(_HeapNode(offset: offset))
+        }
+      }
     }
   }
 }

@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2021 Apple Inc. and the Swift project authors
+// Copyright (c) 2021 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -187,28 +187,40 @@ extension Deque._Storage {
   ) {
     let unique = isUnique()
     if _slowPath(capacity < minimumCapacity || !unique) {
-      _ensureUnique(minimumCapacity: minimumCapacity, linearGrowth: linearGrowth)
+      _ensureUnique(isUnique: unique, minimumCapacity: minimumCapacity, linearGrowth: linearGrowth)
     }
   }
 
   @inlinable
+  @inline(never)
   internal mutating func _ensureUnique(
+    isUnique: Bool,
     minimumCapacity: Int,
     linearGrowth: Bool
   ) {
     if capacity >= minimumCapacity {
-      assert(!self.isUnique())
+      assert(!isUnique)
       self = self.read { $0.copyElements() }
-    } else if isUnique() {
-      let minimumCapacity = _growCapacity(to: minimumCapacity, linearly: linearGrowth)
+      return
+    }
+
+    let minimumCapacity = _growCapacity(to: minimumCapacity, linearly: linearGrowth)
+    if isUnique {
       self = self.update { source in
         source.moveElements(minimumCapacity: minimumCapacity)
       }
     } else {
-      let minimumCapacity = _growCapacity(to: minimumCapacity, linearly: linearGrowth)
       self = self.read { source in
         source.copyElements(minimumCapacity: minimumCapacity)
       }
     }
+  }
+}
+
+extension Deque._Storage {
+  @inlinable
+  @inline(__always)
+  internal func isIdentical(to other: Self) -> Bool {
+    self._buffer.buffer === other._buffer.buffer
   }
 }

@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2021 Apple Inc. and the Swift project authors
+// Copyright (c) 2021 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -19,7 +19,7 @@
 
 extern cpp_hash_fn custom_hash_fn;
 
-struct custom_intptr_hash: public std::unary_function<intptr_t, std::size_t>
+struct custom_intptr_hash: public std::function<std::size_t(intptr_t)>
 {
   std::size_t
   operator()(intptr_t value) const

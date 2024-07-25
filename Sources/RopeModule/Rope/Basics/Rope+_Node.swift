@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2023 Apple Inc. and the Swift project authors
+// Copyright (c) 2023 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,13 +10,13 @@
 //===----------------------------------------------------------------------===//
 
 #if swift(<5.8) && !COLLECTIONS_SINGLE_MODULE
-import _CollectionsUtilities // for 5.8 polyfills
+import InternalCollectionsUtilities // for 5.8 polyfills
 #endif
 
 extension Rope {
+  @frozen // Not really! This module isn't ABI stable.
   @usableFromInline
   internal struct _Node: _RopeItem {
-    @usableFromInline internal typealias Element = Rope.Element
     @usableFromInline internal typealias Summary = Rope.Summary
     @usableFromInline internal typealias Index = Rope.Index
     @usableFromInline internal typealias _Item = Rope._Item
@@ -550,6 +550,7 @@ extension Rope._Node {
     }
   }
 
+  @frozen // Not really! This module isn't ABI stable.
   @usableFromInline
   internal struct _ModifyState {
     @usableFromInline internal var path: _Path

@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2023 Apple Inc. and the Swift project authors
+// Copyright (c) 2023 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 @usableFromInline
+@frozen // Not really! This module isn't ABI stable.
 internal struct _RopeStorageHeader {
   @usableFromInline var _childCount: UInt16
   @usableFromInline let height: UInt8
@@ -33,6 +34,7 @@ internal struct _RopeStorageHeader {
 
 extension Rope {
   @usableFromInline
+  @_fixed_layout // Not really! This module isn't ABI stable.
   internal final class _Storage<Child: _RopeItem<Summary>>:
     ManagedBuffer<_RopeStorageHeader, Child>
   {

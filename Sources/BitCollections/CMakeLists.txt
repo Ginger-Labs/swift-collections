@@ -1,21 +1,20 @@
 #[[
 This source file is part of the Swift Collections Open Source Project
 
-Copyright (c) 2022 Apple Inc. and the Swift project authors
+Copyright (c) 2022 - 2024 Apple Inc. and the Swift project authors
 Licensed under Apache License v2.0 with Runtime Library Exception
 
 See https://swift.org/LICENSE.txt for license information
 #]]
 
-add_library(BitCollections
+list(APPEND COLLECTIONS_BIT_SOURCES
   "BitArray/BitArray+BitwiseOperations.swift"
   "BitArray/BitArray+ChunkedBitsIterators.swift"
   "BitArray/BitArray+Codable.swift"
   "BitArray/BitArray+Collection.swift"
   "BitArray/BitArray+Copy.swift"
-  "BitArray/BitArray+CustomDebugStringConvertible.swift"
   "BitArray/BitArray+CustomReflectable.swift"
-  "BitArray/BitArray+CustomStringConvertible.swift"
+  "BitArray/BitArray+Descriptions.swift"
   "BitArray/BitArray+Equatable.swift"
   "BitArray/BitArray+ExpressibleByArrayLiteral.swift"
   "BitArray/BitArray+Extras.swift"
@@ -23,7 +22,7 @@ add_library(BitCollections
   "BitArray/BitArray+Hashable.swift"
   "BitArray/BitArray+Initializers.swift"
   "BitArray/BitArray+Invariants.swift"
-  "BitArray/BitArray+Random.swift"
+  "BitArray/BitArray+RandomBits.swift"
   "BitArray/BitArray+RangeReplaceableCollection.swift"
   "BitArray/BitArray+Testing.swift"
   "BitArray/BitArray._UnsafeHandle.swift"
@@ -66,10 +65,16 @@ add_library(BitCollections
   "Shared/UInt+Tricks.swift"
   "Shared/_Word.swift"
   )
-target_link_libraries(BitCollections PRIVATE
-  _CollectionsUtilities)
-set_target_properties(BitCollections PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+set_property(GLOBAL APPEND PROPERTY COLLECTIONS_BIT_SOURCES ${COLLECTIONS_BIT_SOURCES})
 
-_install_target(BitCollections)
-set_property(GLOBAL APPEND PROPERTY SWIFT_COLLECTIONS_EXPORTS BitCollections)
+if(NOT COLLECTIONS_SINGLE_MODULE)
+  add_library(BitCollections
+    ${COLLECTIONS_BIT_SOURCES})
+  target_link_libraries(BitCollections PRIVATE
+    InternalCollectionsUtilities)
+  set_target_properties(BitCollections PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+
+  _install_target(BitCollections)
+  set_property(GLOBAL APPEND PROPERTY SWIFT_COLLECTIONS_EXPORTS BitCollections)
+endif()

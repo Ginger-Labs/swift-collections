@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2021 Apple Inc. and the Swift project authors
+// Copyright (c) 2021 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 #if !COLLECTIONS_SINGLE_MODULE
-import _CollectionsUtilities
+import InternalCollectionsUtilities
 #endif
 
 /// An ordered collection of unique elements.
@@ -53,7 +53,7 @@ import _CollectionsUtilities
 /// ``intersection(_:)-4o09a`` or ``isSubset(of:)-ptij``.
 ///
 ///     buildingMaterials.contains("glass") // false
-///     buildingMaterials.intersection(["brick", "straw"]) // ["straw", "brick"]
+///     buildingMaterials.intersection(["bricks", "straw"]) // ["straw", "bricks"]
 ///
 /// Operations that return an ordered set usually preserve the ordering of
 /// elements in their input. For example, in the case of the `intersection` call
@@ -103,7 +103,7 @@ import _CollectionsUtilities
 /// elements to the end of the collection.
 ///
 ///     buildingMaterials.unordered.insert("glass") // => inserted: true
-///     // buildingMaterials is now ["straw", "sticks", "brick", "glass"]
+///     // buildingMaterials is now ["straw", "sticks", "bricks", "glass"]
 ///
 /// Accessing the unordered view is an efficient operation, with constant
 /// (minimal) overhead. Direct mutations of the unordered view (such as the
@@ -240,7 +240,7 @@ import _CollectionsUtilities
 /// The hash table in an ordered set never needs to store larger indices than
 /// the current size of the storage array, and `OrderedSet` makes use of this
 /// observation to reduce the number of bits it uses to encode these integer
-/// vaues. Additionally, the actual hashed elements are stored in a flat array
+/// values. Additionally, the actual hashed elements are stored in a flat array
 /// value rather than the hash table itself, so they aren't subject to the hash
 /// table's strict maximum load factor. These two observations combine to
 /// optimize the memory utilization of `OrderedSet`, sometimes making it even

@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2021 Apple Inc. and the Swift project authors
+// Copyright (c) 2021 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -14,7 +14,7 @@ extension _HashTable {
   /// table. This is a convenient tool for implementing linear probing.
   ///
   /// Beyond merely providing bucket values, bucket iterators can also tell
-  /// you their current oposition within the hash table, and (for mutable hash
+  /// you their current opposition within the hash table, and (for mutable hash
   /// tables) they allow you update the value of the currently visited bucket.
   /// (This is useful when implementing simple insertions, for example.)
   ///

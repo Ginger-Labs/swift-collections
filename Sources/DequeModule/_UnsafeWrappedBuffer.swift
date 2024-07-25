@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2021 Apple Inc. and the Swift project authors
+// Copyright (c) 2021 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 #if !COLLECTIONS_SINGLE_MODULE
-import _CollectionsUtilities
+import InternalCollectionsUtilities
 #endif
 
 @frozen
@@ -199,7 +199,7 @@ extension _UnsafeMutableWrappedBuffer {
     // Note: Array._copyContents traps when not given enough space, so we
     // need to check if we have enough contiguous space available above.
     //
-    // FIXME: Add suppport for segmented (a.k.a. piecewise contiguous)
+    // FIXME: Add support for segmented (a.k.a. piecewise contiguous)
     // collections to the stdlib.
     var (it, copied) = elements._copyContents(initializing: first)
     if copied == first.count, let second = second {

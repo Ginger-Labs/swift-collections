@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2023 Apple Inc. and the Swift project authors
+// Copyright (c) 2023 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -39,9 +39,6 @@ extension Rope {
     var left = left.root
     var right = right.root
     
-    left.ensureUnique()
-    right.ensureUnique()
-    
     if left.height >= right.height {
       let r = left._graftBack(&right)
       guard let remainder = r.remainder else { return Self(root: left) }
@@ -64,6 +61,10 @@ extension Rope._Node {
     _ scion: inout Self
   ) -> (remainder: Self?, delta: Summary) {
     assert(self.height >= scion.height)
+
+    self.ensureUnique()
+    scion.ensureUnique()
+
     guard self.height > scion.height else {
       assert(self.height == scion.height)
       let d = scion.summary
@@ -99,6 +100,10 @@ extension Rope._Node {
     _ scion: inout Self
   ) -> (remainder: Self?, delta: Summary) {
     assert(self.height >= scion.height)
+
+    self.ensureUnique()
+    scion.ensureUnique()
+
     guard self.height > scion.height else {
       assert(self.height == scion.height)
       let origSum = self.summary

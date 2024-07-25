@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2021 - 2023 Apple Inc. and the Swift project authors
+// Copyright (c) 2021 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 #if !COLLECTIONS_SINGLE_MODULE
-import _CollectionsUtilities
+import InternalCollectionsUtilities
 #endif
 
 extension OrderedDictionary.Elements {
@@ -47,11 +47,7 @@ extension OrderedDictionary.Elements.SubSequence: CustomStringConvertible {
 extension OrderedDictionary.Elements.SubSequence: CustomDebugStringConvertible {
   /// A textual representation of this instance, suitable for debugging.
   public var debugDescription: String {
-    _dictionaryDescription(
-      for: self,
-      debug: true,
-      typeName: "\(OrderedDictionary._debugTypeName()).Elements.SubSequence"
-    )
+    description
   }
 }
 
@@ -85,7 +81,8 @@ extension OrderedDictionary.Elements.SubSequence {
   ///     let slice = countryCodes.elements[1...]
   ///     let index = slice.index(forKey: "JP")
   ///
-  ///     print("Country code for \(countryCodes[offset: index!].value): '\(countryCodes[offset: index!].key)'.")
+  ///     let (key, value) = countryCodes.elements[index!]
+  ///     print("Country code for \(value): '\(key)'.")
   ///     // Prints "Country code for Japan: 'JP'."
   ///
   /// - Parameter key: The key to find in the dictionary slice.

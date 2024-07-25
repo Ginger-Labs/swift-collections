@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2022 Apple Inc. and the Swift project authors
+// Copyright (c) 2022 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -874,7 +874,7 @@ extension _RawHashNode {
         }
         distance += c
       }
-      // See if the target is hiding somwhere in our immediate items.
+      // See if the target is hiding somewhere in our immediate items.
       distance &+= $0.itemCount
       if distance >= 0 {
         path.selectItem(at: _HashSlot(distance))

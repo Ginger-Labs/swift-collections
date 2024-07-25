@@ -1,19 +1,17 @@
 #[[
 This source file is part of the Swift Collections Open Source Project
 
-Copyright (c) 2022 Apple Inc. and the Swift project authors
+Copyright (c) 2022 - 2024 Apple Inc. and the Swift project authors
 Licensed under Apache License v2.0 with Runtime Library Exception
 
 See https://swift.org/LICENSE.txt for license information
 #]]
 
-add_library(HashTreeCollections
+list(APPEND COLLECTIONS_HASHTREE_SOURCES
   "HashNode/_AncestorHashSlots.swift"
   "HashNode/_Bitmap.swift"
   "HashNode/_Bucket.swift"
   "HashNode/_Hash.swift"
-  "HashNode/_HashTreeIterator.swift"
-  "HashNode/_HashTreeStatistics.swift"
   "HashNode/_HashLevel.swift"
   "HashNode/_HashNode+Builder.swift"
   "HashNode/_HashNode+Debugging.swift"
@@ -40,10 +38,12 @@ add_library(HashTreeCollections
   "HashNode/_HashNode+Subtree Removals.swift"
   "HashNode/_HashNode+UnsafeHandle.swift"
   "HashNode/_HashNode.swift"
-  "HashNode/_RawHashNode+UnsafeHandle.swift"
-  "HashNode/_RawHashNode.swift"
   "HashNode/_HashSlot.swift"
   "HashNode/_HashStack.swift"
+  "HashNode/_HashTreeIterator.swift"
+  "HashNode/_HashTreeStatistics.swift"
+  "HashNode/_RawHashNode+UnsafeHandle.swift"
+  "HashNode/_RawHashNode.swift"
   "HashNode/_HashNodeHeader.swift"
   "HashNode/_UnmanagedHashNode.swift"
   "HashNode/_UnsafePath.swift"
@@ -94,10 +94,16 @@ add_library(HashTreeCollections
   "TreeSet/TreeSet+SetAlgebra union.swift"
   "TreeSet/TreeSet.swift"
   )
-target_link_libraries(HashTreeCollections PRIVATE
-  _CollectionsUtilities)
-set_target_properties(HashTreeCollections PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+set_property(GLOBAL APPEND PROPERTY COLLECTIONS_HASHTREE_SOURCES ${COLLECTIONS_HASHTREE_SOURCES})
 
-_install_target(HashTreeCollections)
-set_property(GLOBAL APPEND PROPERTY SWIFT_COLLECTIONS_EXPORTS HashTreeCollections)
+if(NOT COLLECTIONS_SINGLE_MODULE)
+  add_library(HashTreeCollections
+    ${COLLECTIONS_HASHTREE_SOURCES})
+  target_link_libraries(HashTreeCollections PRIVATE
+    InternalCollectionsUtilities)
+  set_target_properties(HashTreeCollections PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
+
+  _install_target(HashTreeCollections)
+  set_property(GLOBAL APPEND PROPERTY SWIFT_COLLECTIONS_EXPORTS HashTreeCollections)
+endif()

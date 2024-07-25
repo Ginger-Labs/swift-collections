@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2021-2022 Apple Inc. and the Swift project authors
+// Copyright (c) 2021 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 #if !COLLECTIONS_SINGLE_MODULE
-import _CollectionsUtilities
+import InternalCollectionsUtilities
 #endif
 
 extension BitSet {
@@ -223,8 +223,8 @@ extension _UnsafeBitSet {
     let r = range.clamped(to: 0 ..< UInt(capacity))
     guard r == range else { return false }
 
-    let lower = Index(range.lowerBound)
-    let upper = Index(range.upperBound)
+    let lower = Index(range.lowerBound).split
+    let upper = Index(range.upperBound).endSplit
 
     guard upper.word == wordCount &- 1 else { return false }
 

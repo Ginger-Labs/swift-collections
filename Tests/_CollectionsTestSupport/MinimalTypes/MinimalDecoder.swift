@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2021 Apple Inc. and the Swift project authors
+// Copyright (c) 2021 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -179,7 +179,7 @@ extension MinimalDecoder.KeyedContainer: KeyedDecodingContainerProtocol {
     return input[key.stringValue] != nil
   }
 
-  func _decode<Key: CodingKey>(key: Key) throws -> Value {
+  func _decode<K: CodingKey>(key: K) throws -> Value {
     expectTrue(isValid, "Container isn't valid", trapping: true)
     commitPendingContainer()
     guard let value = input[key.stringValue] else {

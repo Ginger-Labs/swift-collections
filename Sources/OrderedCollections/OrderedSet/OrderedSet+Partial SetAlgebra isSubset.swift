@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift Collections open source project
 //
-// Copyright (c) 2021-2022 Apple Inc. and the Swift project authors
+// Copyright (c) 2021 - 2024 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -10,7 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 #if !COLLECTIONS_SINGLE_MODULE
-import _CollectionsUtilities
+import InternalCollectionsUtilities
 #endif
 
 // `OrderedSet` does not directly conform to `SetAlgebra` because its definition
@@ -115,13 +115,13 @@ extension OrderedSet {
   ///    is the number of elements in `other`, if `Element` implements
   ///    high-quality hashing.
   @inlinable
-  public func isSubset<S: Sequence>(
-    of other: S
-  ) -> Bool where S.Element == Element {
+  public func isSubset(
+    of other: some Sequence<Element>
+  ) -> Bool {
     guard !isEmpty else { return true }
 
-    if S.self == Self.self {
-      return isSubset(of: other as! Self)
+    if let other = _specialize(other, for: Self.self) {
+      return isSubset(of: other)
     }
 
     var it = self.makeIterator()

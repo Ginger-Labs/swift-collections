@@ -10,37 +10,31 @@ Read more about the package, and the intent behind it, in the [announcement on s
 
 The package currently provides the following implementations:
 
+- [`BitSet`][BitSet] and [`BitArray`][BitArray], dynamic bit collections.
+
 - [`Deque<Element>`][Deque], a double-ended queue backed by a ring buffer. Deques are range-replaceable, mutable, random-access collections.
+
+- [`Heap`][Heap], a min-max heap backed by an array, suitable for use as a priority queue.
 
 - [`OrderedSet<Element>`][OrderedSet], a variant of the standard `Set` where the order of items is well-defined and items can be arbitrarily reordered. Uses a `ContiguousArray` as its backing store, augmented by a separate hash table of bit packed offsets into it.
 
 - [`OrderedDictionary<Key, Value>`][OrderedDictionary], an ordered variant of the standard `Dictionary`, providing similar benefits.
 
-The following additional types are expected to ship soon, in version 1.1:
-
-- [`BitSet`][BitSet] and [`BitArray`][BitArray], dynamic bit collections.
-
-- [`Heap`][Heap], a min-max heap backed by an array, suitable for use as a priority queue.
-
 - [`TreeSet`][TreeSet] and [`TreeDictionary`][TreeDictionary], persistent hashed collections implementing Compressed Hash-Array Mapped Prefix Trees (CHAMP). These work similar to the standard `Set` and `Dictionary`, but they excel at use cases that mutate shared copies, offering dramatic memory savings and radical time improvements.  
 
-Preview versions of these new types are available on the `release/1.1` branch. Note that until these types ship in a tagged release, their API and implementation may change without notice -- it isn't a good idea to rely on them in production code yet. However, you can try these in experimental projects by using a branch- or commit-based dependency requirement in your package manifest.
+[BitSet]: https://swiftpackageindex.com/apple/swift-collections/1.1.0/documentation/bitcollections/bitset
+[BitArray]: https://swiftpackageindex.com/apple/swift-collections/1.1.0/documentation/bitcollections/bitarray
+[Deque]: https://swiftpackageindex.com/apple/swift-collections/1.1.0/documentation/dequemodule/deque
+[Heap]: https://swiftpackageindex.com/apple/swift-collections/1.1.0/documentation/heapmodule/heap
+[OrderedSet]: https://swiftpackageindex.com/apple/swift-collections/1.1.0/documentation/orderedcollections/orderedset
+[OrderedDictionary]: https://swiftpackageindex.com/apple/swift-collections/1.1.0/documentation/orderedcollections/ordereddictionary
+[TreeSet]: https://swiftpackageindex.com/apple/swift-collections/1.1.0/documentation/hashtreecollections/treeset
+[TreeDictionary]: https://swiftpackageindex.com/apple/swift-collections/1.1.0/documentation/hashtreecollections/treedictionary
 
-[BitSet]: Documentation/BitSet.md
-[BitArray]: Documentation/BitArray.md
-[Deque]: Documentation/Deque.md
-[Heap]: Documentation/Heap.md
-[OrderedSet]: Documentation/OrderedSet.md
-[OrderedDictionary]: Documentation/OrderedDictionary.md
-[TreeSet]: Documentation/TreeSet.md
-[TreeDictionary]: Documentation/TreeDictionary.md
-
-The following additional data structures are currently under development on but they aren't stable enough to preview yet.
+The following additional data structures are currently under development but they aren't stable enough to preview yet.
 
 - [`SortedSet` and `SortedDictionary`](https://github.com/apple/swift-collections/pull/65), sorted collections backed by in-memory persistent b-trees.
 - [`SparseSet`](https://github.com/apple/swift-collections/pull/80), a constant time set construct, trading off memory for speed.
-
-[Heap]: Documentation/Heap.md
 
 Swift Collections uses the same modularization approach as [**Swift Numerics**](https://github.com/apple/swift-numerics): it provides a standalone module for each thematic group of data structures it implements. For instance, if you only need a double-ended queue type, you can pull in only that by importing `DequeModule`. `OrderedSet` and `OrderedDictionary` share much of the same underlying implementation, so they are provided by a single module, called `OrderedCollections`. However, there is also a top-level `Collections` module that gives you every collection type with a single import statement:
 
@@ -79,10 +73,10 @@ We'd like this package to quickly embrace Swift language and toolchain improveme
 
 The following table maps existing package releases to their minimum required Swift toolchain release:
 
-| Package version         | Swift version | Xcode release |
-| ----------------------- | ------------- | ------------- |
-| swift-collections 1.0.x | >= Swift 5.3  | >= Xcode 12   |
-| swift-collections 1.1.x | >= Swift 5.6  | >= Xcode 13.3 |
+| Package version         | Swift version   | Xcode release |
+| ----------------------- | --------------- | ------------- |
+| swift-collections 1.0.x | >= Swift 5.3.2  | >= Xcode 12.4 |
+| swift-collections 1.1.x | >= Swift 5.7.2  | >= Xcode 14.2 |
 
 (Note: the package has no minimum deployment target, so while it does require clients to use a recent Swift toolchain to build it, the code itself is able to run on any OS release that supports running Swift code.)
 
@@ -92,7 +86,7 @@ The following table maps existing package releases to their minimum required Swi
 To use this package in a SwiftPM project, you need to set it up as a package dependency:
 
 ```swift
-// swift-tools-version:5.7
+// swift-tools-version:5.9
 import PackageDescription
 
 let package = Package(
@@ -122,6 +116,22 @@ We have a dedicated [Swift Collections Forum][forum] where people can ask and an
 
 If you find something that looks like a bug, please open a [Bug Report][bugreport]! Fill out as many details as you can.
 
+### Branching Strategy
+
+We maintain separate branches for each minor version of the package:
+
+| Package version         | Branch      | 
+| ----------------------- | ----------- |
+| swift-collections 1.0.x | release/1.0 |
+| swift-collections 1.1.x | release/1.1 |
+| swift-collections 1.2.x | main        |
+
+Changes must land on the branch corresponding to the earliest release that they will need to ship on. They are periodically propagated to subsequent branches, in the following direction:
+
+`release/1.0` → `release/1.1` → `main`
+
+For example, anything landing on `release/1.0` will eventually appear on `release/1.1` and then `main` too; there is no need to file standalone PRs for each release line. (Change propagation currently requires manual work -- it is performed by project maintainers.)
+
 ### Working on the package
 
 We have some basic [documentation on package internals](./Documentation/Internals/README.md) that will help you get started.
@@ -130,8 +140,9 @@ By submitting a pull request, you represent that you have the right to license y
 
 #### Fixing a bug or making a small improvement
 
-1. [Submit a PR][PR] with your change. If there is an [existing issue][issues] for the bug you're fixing, please include a reference to it.
-2. Make sure to add tests covering whatever changes you are making.
+1. Make sure to start by checking out the appropriate branch for the minor release you want the fix to ship in. (See above.)
+2. [Submit a PR][PR] with your change. If there is an [existing issue][issues] for the bug you're fixing, please include a reference to it.
+3. Make sure to add tests covering whatever changes you are making.
 
 [PR]: https://github.com/apple/swift-collections/compare
 [issues]: https://github.com/apple/swift-collections/issues
